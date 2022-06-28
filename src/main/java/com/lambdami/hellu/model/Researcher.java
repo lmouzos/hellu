@@ -1,7 +1,12 @@
 package com.lambdami.hellu.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author Loukas Mouzos
@@ -14,45 +19,19 @@ import lombok.Getter;
 public class Researcher extends Author {
 
     @Builder
-    public Researcher(String[] name, String firstName, String middleName, String lastName) {
-        super(name, firstName, middleName, lastName);
+    public Researcher(List<String> name) {
+        super(name);
     }
 
     public static Researcher from(String author) {
-        String auth1 = trimComma(author);
-        String auth2 = trimAnd(auth1);
+        List<String> names = Arrays.stream(trim(author).split(" "))
+                .map(Researcher::trim).collect(Collectors.toList());
+        return Researcher.builder().name(names).build();
+    }
 
-        String[] items = auth2.split(" ");
-
-        if (items.length == 2) {
-            if (items[0].contains(",")) {
-                return Researcher.builder()
-                        .firstName(items[1].trim())
-                        .lastName(items[0].replace(",", "").trim())
-                        .build();
-            }
-            return Researcher.builder()
-                    .firstName(items[0].trim())
-                    .lastName(items[1].trim())
-                    .build();
-        }
-
-        if (items.length == 3) {
-            if (items[0].contains(",")) {
-                return Researcher.builder()
-                        .firstName(items[1].trim())
-                        .lastName(items[0].replace(",", "").trim())
-                        .middleName(items[2].trim())
-                        .build();
-            }
-            return Researcher.builder()
-                    .firstName(items[0].trim())
-                    .middleName(items[1].trim())
-                    .lastName(items[2].trim())
-                    .build();
-        }
-        System.err.println("Name cannot be parsed properly, " + author);
-        return Researcher.builder().build();
+    private static String trim(String author) {
+        author = trimComma(author);
+        return trimAnd(author).trim();
     }
 
     private static String trimAnd(String author) {

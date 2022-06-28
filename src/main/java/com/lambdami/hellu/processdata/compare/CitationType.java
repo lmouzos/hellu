@@ -6,6 +6,7 @@ import com.lambdami.hellu.model.Publication;
 import com.lambdami.hellu.util.Collections;
 
 import java.util.Comparator;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -17,51 +18,46 @@ import java.util.stream.Collectors;
 
 public class CitationType {
 
-    private CitedPublication publication;
-    private List<Publication> citations;
-
-//    Comparator<String>
+    private final CitedPublication publication;
+    private final List<Publication> citations;
 
     public CitationType(CitedPublication publication, List<Publication> citations) {
         this.publication = publication;
         this.citations = citations;
     }
 
-    // TODO: Continue from here: comparison of two string whether they are same or not
     public void setCitationType() {
         Set<Author> publicationAuthors = this.publication.getAuthors();
-        Set<Publication> selfCitations = this.citations.stream()
-                .filter(citation -> Collections.any(citation.getAuthors(), publicationAuthors))
-                .collect(Collectors.toSet());
-
-        Set<Publication> heteroCitations = this.citations.stream()
-                .filter(citation -> Collections.none(citation.getAuthors(), publicationAuthors))
-                .collect(Collectors.toSet());
-
-        this.publication.addSelfCitations(selfCitations);
-        this.publication.addHeteroCitations(heteroCitations);
         if (publicationAuthors == null) {
             return;
         }
-        for (int i = 0; i < citations.size(); i++) {
-            Set<Author> citationSAuthors = citations.get(i).getAuthors();
-            boolean isSelf = false;
-            if (citationSAuthors != null) {
-                for (int mainPubAuthor = 0; mainPubAuthor < publicationAuthors.size(); mainPubAuthor++) {
-                    for (int citationAuthor = 0; citationAuthor < citationSAuthors.size(); citationAuthor++) {
-                        Comparison c = new Comparison(publicationAuthors.get(mainPubAuthor), citationSAuthors.get(citationAuthor));
-                        if (c.isTheSameAuthor()) {
-                            isSelf = true;
-                        }
-                    }
-                }
-                if (isSelf) {
-                    this.publication.addSelfCitation(citations.get(i));
-                } else {
-                    this.publication.addHeteroCitation(citations.get(i));
+        for (Publication citation : citations) {
+            Set<Author> citationAuthors = citation.getAuthors();
+            if (citationAuthors == null) {
+                continue;
+            }
+            if (compare(publicationAuthors, citationAuthors)) {
+                this.publication.addSelfCitation(citation);
+            } else {
+                this.publication.addHeteroCitation(citation);
+            }
+
+        }
+    }
+
+    private boolean compare(Set<Author> publicationAuthors, Set<Author> citationSAuthors) {
+        Iterator<Author> iteratorMainPub = publicationAuthors.iterator();
+        Iterator<Author> iteratorCitation = citationSAuthors.iterator();
+        while (iteratorMainPub.hasNext()) {
+            Author authorMain = iteratorMainPub.next();
+            while (iteratorCitation.hasNext()) {
+                Author authorCite = iteratorCitation.next();
+                if (authorMain.isSameWith(authorCite)) {
+                    return true;
                 }
             }
         }
+        return false;
     }
 
     public CitedPublication getCitedPublication() {

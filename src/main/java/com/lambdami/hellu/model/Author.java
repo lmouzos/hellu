@@ -1,9 +1,12 @@
 package com.lambdami.hellu.model;
 
+import com.lambdami.hellu.processdata.compare.Comparison;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
-import java.util.Objects;
+import java.util.Comparator;
+import java.util.List;
 
 /**
  * @author Loukas Mouzos
@@ -14,47 +17,29 @@ import java.util.Objects;
  */
 @Getter
 @AllArgsConstructor
+@NoArgsConstructor
 public class Author {
 
-    @Deprecated
-    String[] name;
+    private static Comparator<Author> COMPARATOR = Comparison::isTheSameAuthor;
 
-    private String firstName;
-    private String middleName;
-    private String lastName;
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Author author = (Author) o;
-        return firstName.equals(author.firstName) && Objects.equals(middleName, author.middleName) && lastName.equals(author.lastName);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(firstName, middleName, lastName);
-    }
-
-    @Deprecated
-    public Author(String[] name) {
-        this.name = name;
-    }
-
-    public String[] getName() {
-        return name;
-    }
+    List<String> name;
 
     @Override
     public String toString() {
         return "Author{" +
-                "firstName='" + firstName + '\'' +
-                ", middleName='" + middleName + '\'' +
-                ", lastName='" + lastName + '\'' +
+                "name=" + name.stream().reduce("", (cur, acc) -> acc + " " + cur) +
                 '}';
     }
 
+    public boolean isSameWith(Author other) {
+        return Author.COMPARATOR.compare(this, other) == 0;
+    }
+    /**
+     * FIXME
+     *
+     * @return the name of the Author as a BIB text
+     */
     public String toStringBIB() {
-        return firstName + ", " + middleName + ", " + lastName;
+        throw new IllegalStateException("Not implemented yet.");
     }
 }

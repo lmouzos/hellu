@@ -24,9 +24,8 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 /**
- *
- * @author Loukas Mouzos 
- *  contact : loukas.mouzos@gmail.com
+ * @author Loukas Mouzos
+ * contact : loukas.mouzos@gmail.com
  */
 
 public class ExportFile {
@@ -66,9 +65,9 @@ public class ExportFile {
 
                 //year element
                 Element yearElement = doc.createElement("year");
-                yearElement.appendChild(doc.createTextNode(""+P.get(i).getYear()));
+                yearElement.appendChild(doc.createTextNode("" + P.get(i).getYear()));
                 publicationElement.appendChild(yearElement);
-                
+
                 //citations element
                 Element citationsElement = doc.createElement("citations");
 
@@ -98,7 +97,7 @@ public class ExportFile {
                     citationElement.appendChild(siteCElement);
                     //year element
                     Element yearCElement = doc.createElement("year");
-                    yearCElement.appendChild(doc.createTextNode(""+hetero.get(hj).getYear()));
+                    yearCElement.appendChild(doc.createTextNode("" + hetero.get(hj).getYear()));
                     publicationElement.appendChild(yearElement);
 
                     heteroElement.appendChild(citationElement);
@@ -124,7 +123,7 @@ public class ExportFile {
                     citationElement.appendChild(siteCElement);
                     //year element
                     Element yearCElement = doc.createElement("year");
-                    yearCElement.appendChild(doc.createTextNode(""+self.get(sj).getYear()));
+                    yearCElement.appendChild(doc.createTextNode("" + self.get(sj).getYear()));
                     publicationElement.appendChild(yearElement);
 
                     selfElement.appendChild(citationElement);
@@ -143,10 +142,9 @@ public class ExportFile {
 
             DOMSource source = new DOMSource(doc);
             StreamResult result;
-            if ( chosenFile.endsWith(".xml") ){
+            if (chosenFile.endsWith(".xml")) {
                 result = new StreamResult(new File(chosenFile));
-            }
-            else{
+            } else {
                 result = new StreamResult(new File(chosenFile + ".xml"));
             }
 
@@ -233,21 +231,20 @@ public class ExportFile {
         }
         return content;
     }
-    
-    
-    
-    public static void createBibTexFile(ArrayList<CitedPublication> P, String chosenFile){
+
+
+    public static void createBibTexFile(ArrayList<CitedPublication> P, String chosenFile) {
         String content = "";
-        
-        for ( int i = 0; i < P.size(); i++ ){
+
+        for (int i = 0; i < P.size(); i++) {
             content += createBibTexElement(P.get(i));
         }
         try {
             File file;
-            if ( chosenFile.endsWith(".bib")){
-            file = new File( chosenFile );
-            }else {
-                file = new File( chosenFile + ".bib" );
+            if (chosenFile.endsWith(".bib")) {
+                file = new File(chosenFile);
+            } else {
+                file = new File(chosenFile + ".bib");
             }
             if (!file.exists()) {
                 try {
@@ -266,33 +263,33 @@ public class ExportFile {
         } catch (IOException ex) {
             Logger.getLogger(ExportFile.class.getName()).log(Level.SEVERE, null, ex);
             System.out.println(ex.getLocalizedMessage() + " HELEN");
-        }  
-        
+        }
+
     }
-    
-    private static String createBibTexElement(CitedPublication Pi){
+
+    private static String createBibTexElement(CitedPublication citedPublication) {
         String element = "";
-        
         String year = "";
-        if ( Pi.getYear() != 0 )
-            year = ""+ Pi.getYear();
-        String title = Pi.getTitle();
-        String authors = Pi.printAuthorsBIB();
-        String site = Pi.getHrefPage();
-        String author[] = Pi.getAuthors().get(0).getName();
-        if (author.length == 1)
-            element = "@article{"+author[0]+year+", \n\t"
-                + "title={"+title+"}, \n\t"
-                + "author={"+authors+"}, \n\t"
-                + "year={"+year+"}, \n\t"
-                + "site={"+site+"}\n}\n\n";        
-        else
-            element = "@article{"+author[0]+author[1]+year+", \n\t"
-                + "title={"+title+"}, \n\t"
-                + "author={"+authors+"}, \n\t"
-                + "year={"+year+"}, \n\t"
-                + "site={"+site+"}\n}\n\n"; 
-        
+        if (citedPublication.getYear() != 0) {
+            year = "" + citedPublication.getYear();
+        }
+        String title = citedPublication.getTitle();
+        String authors = citedPublication.printAuthorsBIB();
+        String site = citedPublication.getHrefPage();
+        List<String> author = citedPublication.getAuthors().iterator().next().getName();
+        if (author.size() == 1) {
+            element = "@article{" + author.get(0) + year + ", \n\t"
+                    + "title={" + title + "}, \n\t"
+                    + "author={" + authors + "}, \n\t"
+                    + "year={" + year + "}, \n\t"
+                    + "site={" + site + "}\n}\n\n";
+        } else {
+            element = "@article{" + author.get(0) + author.get(1) + year + ", \n\t"
+                    + "title={" + title + "}, \n\t"
+                    + "author={" + authors + "}, \n\t"
+                    + "year={" + year + "}, \n\t"
+                    + "site={" + site + "}\n}\n\n";
+        }
         return element;
     }
 }

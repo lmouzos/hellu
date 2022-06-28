@@ -6,6 +6,7 @@ import com.lambdami.hellu.model.Publication;
 import com.lambdami.hellu.model.Researcher;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -50,7 +51,7 @@ public class Extract {
                 
                 String []name2 = splitAuthorMiddleName(name);
                 
-                authors.add(new Author(name2));
+                authors.add(new Author(Arrays.asList(name2)));
             }
         }
         return authors;
